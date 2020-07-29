@@ -1,0 +1,13 @@
+name: code
+version: 0.1.0
+
+authors:
+  - Dorian Marié <dorian@dorianmarie.fr>
+
+targets:
+  code:
+    main: src/code.cr
+
+crystal: 0.35.1
+
+license: MIT
