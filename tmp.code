@@ -1,3 +1,5 @@
-# this is a comment
-(( )){} # grouping stuff
-!*+-/=<> <= == # operators
+a = 1
+
+if a == 1 {
+  puts "hello world"
+}

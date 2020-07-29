@@ -1,5 +1,5 @@
 module Code
-  alias LiteralType = (Int32 | String | Char | Float32 | Nil)
+  alias LiteralType = (Int32 | String | Char | Float64 | Nil)
 
   enum TokenType
     LEFT_PAREN; RIGHT_PAREN; LEFT_BRACE; RIGHT_BRACE
@@ -8,7 +8,7 @@ module Code
     GREATER; GREATER_EQUAL; LESS; LESS_EQUAL
     IDENTIFIER; STRING; NUMBER
     AND; CLASS; ELSE; FALSE; DEFINE; FOR; IF; NIL; OR;
-    PUTS; PRINT; RETURN; SUPER; SELF; TRUE; WHILE
+    PUTS; PRINT; RETURN; SUPER; SELF; TRUE; WHILE; NEWLINE
     EOF
   end
 

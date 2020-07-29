@@ -2,10 +2,28 @@ require "./token"
 
 module Code
   class Scanner
+    @@keywords = {
+      and: TokenType::AND,
+      class: TokenType::CLASS,
+      else: TokenType::ELSE,
+      false: TokenType::FALSE,
+      for: TokenType::FOR,
+      define: TokenType::DEFINE,
+      if: TokenType::IF,
+      nil: TokenType::NIL,
+      or: TokenType::OR,
+      print: TokenType::PRINT,
+      puts: TokenType::PUTS,
+      return: TokenType::RETURN,
+      super: TokenType::SUPER,
+      self: TokenType::SELF,
+      true: TokenType::TRUE,
+      while: TokenType::WHILE,
+    }
+
     def initialize(source : String)
       @source = source
       @tokens = Array(Token).new
-      @had_error = false
       @start = 0
       @current = 0
       @line = 1
@@ -76,7 +94,14 @@ module Code
         end
       elsif c == ' ' || c == '\r' || c == '\t'
       elsif c == '\n'
+        add_token(TokenType::NEWLINE)
         @line += 1
+      elsif c == '"'
+        string
+      elsif digit?(c)
+        number
+      elsif alpha?(c)
+        identifier
       else
         Code::Runner.error(@line, "unexpected character #{c}")
       end
@@ -104,8 +129,68 @@ module Code
       @source[@current]
     end
 
+    def string
+      while peek != '"' && !is_at_end?
+        @line += 1 if peek == '\n'
+        advance
+      end
+
+      if is_at_end?
+        Code::Runner.error(@line, "unterminated string")
+        return
+      end
+
+      advance # closing "
+
+      value = @source[(@start + 1)...(@current - 1)]
+      add_token(TokenType::STRING, value)
+    end
+
+    def digit?(c : Char)
+      c >= '0' && c <= '9'
+    end
+
+    def number
+      while digit?(peek)
+        advance
+      end
+
+      if peek == '.' && digit?(peek_next)
+        advance # consume the .
+        while digit?(peek)
+          advance
+        end
+      end
+
+      add_token(TokenType::NUMBER, @source[@start...@current].to_f)
+    end
+
+    def peek_next
+      return '\0' if @current + 1 >= @source.size
+      @source[@current + 1]
+    end
+
     def is_at_end?
       @current >= @source.size
+    end
+
+    def identifier
+      while alpha_numeric?(peek)
+        advance
+      end
+
+      text = @source[@start...@current]
+      type = @@keywords.fetch(text) { TokenType::IDENTIFIER }
+
+      add_token(type)
+    end
+
+    def alpha?(c : Char)
+      (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+    end
+
+    def alpha_numeric?(c : Char)
+      alpha?(c) || digit?(c)
     end
   end
 end
