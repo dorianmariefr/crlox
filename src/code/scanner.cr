@@ -112,12 +112,12 @@ module Code
       @source[@current - 1]
     end
 
-    def add_token(type : TokenType, literal : LiteralType = nil)
+    def add_token(type, literal = nil)
       text = @source[@start...@current]
       @tokens << Token.new(type, text, literal, @line)
     end
 
-    def match(expected : Char)
+    def match(expected)
       return false if at_end?
       return false if @source[@current] != expected
       @current += 1
@@ -146,7 +146,7 @@ module Code
       add_token(TokenType::STRING, value)
     end
 
-    def digit?(c : Char)
+    def digit?(c)
       c >= '0' && c <= '9'
     end
 
@@ -185,11 +185,11 @@ module Code
       add_token(type)
     end
 
-    def alpha?(c : Char)
+    def alpha?(c)
       (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
     end
 
-    def alpha_numeric?(c : Char)
+    def alpha_numeric?(c)
       alpha?(c) || digit?(c)
     end
   end

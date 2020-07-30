@@ -2,29 +2,28 @@ require "./expression"
 
 module Code
   class AstPrinter
-    def print(expression : (Expression | Nil))
-      return if expression.nil?
+    def print(expression)
       expression.accept(self)
     end
 
-    def visit_binary_expression(expression : Expression::Binary)
+    def visit_binary_expression(expression)
       parenthesize(expression.operator.lexeme, expression.left, expression.right)
     end
 
-    def visit_grouping_expression(expression : Expression::Grouping)
+    def visit_grouping_expression(expression)
       parenthesize("group", expression.expression)
     end
 
-    def visit_literal_expression(expression : Expression::Literal)
+    def visit_literal_expression(expression)
       return "nil" if expression.value == nil
       expression.value.to_s
     end
 
-    def visit_unary_expression(expression : Expression::Unary)
+    def visit_unary_expression(expression)
       parenthesize(expression.operator.lexeme, expression.right)
     end
 
-    def parenthesize(name : String, *expressions)
+    def parenthesize(name, *expressions)
       result = "(#{name}"
 
       expressions.each do |expression|

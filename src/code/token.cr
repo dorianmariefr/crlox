@@ -1,5 +1,7 @@
 module Code
-  alias LiteralType = (Int32 | String | Char | Float64 | Bool | Nil)
+  alias Integer = Int32
+  alias Float = Float64
+  alias LiteralType = (String | Char | Float | Bool | Nil)
 
   enum TokenType
     LEFT_PAREN; RIGHT_PAREN; LEFT_BRACE; RIGHT_BRACE
@@ -15,7 +17,7 @@ module Code
   class Token
     property :type, :lexeme, :literal, :line
 
-    def initialize(type : TokenType, lexeme : String, literal : LiteralType, line : Int32)
+    def initialize(type : TokenType, lexeme : String, literal : LiteralType, line : Integer)
       @type = type
       @lexeme = lexeme
       @literal = literal
