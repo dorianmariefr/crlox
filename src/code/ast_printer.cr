@@ -2,7 +2,8 @@ require "./expression"
 
 module Code
   class AstPrinter
-    def print(expression : Expression)
+    def print(expression : (Expression | Nil))
+      return if expression.nil?
       expression.accept(self)
     end
 

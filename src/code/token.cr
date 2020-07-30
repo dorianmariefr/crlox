@@ -1,5 +1,5 @@
 module Code
-  alias LiteralType = (Int32 | String | Char | Float64 | Nil)
+  alias LiteralType = (Int32 | String | Char | Float64 | Bool | Nil)
 
   enum TokenType
     LEFT_PAREN; RIGHT_PAREN; LEFT_BRACE; RIGHT_BRACE

@@ -1,4 +1,6 @@
 require "./scanner"
+require "./parser"
+require "./ast_printer"
 
 module Code
   class Runner
@@ -18,6 +20,14 @@ module Code
       report(line, "", message)
     end
 
+    def self.error(token : Token, message : String)
+      if (token.type == TokenType::EOF)
+        report(token.line, "at end", message)
+      else
+        report(token.line, "at '#{token.lexeme}'", message)
+      end
+    end
+
     def self.run_file(filepath)
       run(File.read(filepath))
       exit(1) if @@had_error
@@ -26,10 +36,9 @@ module Code
     def self.run(source)
       scanner = Code::Scanner.new(source)
       tokens = scanner.scan_tokens
-
-      tokens.each do |token|
-        puts token.to_s
-      end
+      expression = Code::Parser.new(tokens).parse
+      return if @@had_error
+      puts AstPrinter.new.print(expression)
     end
 
     def self.run_prompt

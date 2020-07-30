@@ -30,7 +30,7 @@ module Code
     end
 
     def scan_tokens
-      while !is_at_end?
+      while !at_end?
         @start = @current
         scan_token
       end
@@ -65,7 +65,7 @@ module Code
       elsif c == '/'
         add_token(TokenType::SLASH)
       elsif c == '#'
-        while peek != '\n' && !is_at_end?
+        while peek != '\n' && !at_end?
           advance
         end
       elsif c == '!'
@@ -118,24 +118,24 @@ module Code
     end
 
     def match(expected : Char)
-      return false if is_at_end?
+      return false if at_end?
       return false if @source[@current] != expected
       @current += 1
       true
     end
 
     def peek
-      return '\0' if is_at_end?
+      return '\0' if at_end?
       @source[@current]
     end
 
     def string
-      while peek != '"' && !is_at_end?
+      while peek != '"' && !at_end?
         @line += 1 if peek == '\n'
         advance
       end
 
-      if is_at_end?
+      if at_end?
         Code::Runner.error(@line, "unterminated string")
         return
       end
@@ -170,7 +170,7 @@ module Code
       @source[@current + 1]
     end
 
-    def is_at_end?
+    def at_end?
       @current >= @source.size
     end
 
