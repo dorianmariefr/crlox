@@ -1,4 +1,4 @@
 require "./spec_helper"
 
-describe Code do
+describe Crlox do
 end

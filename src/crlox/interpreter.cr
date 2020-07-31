@@ -1,6 +1,6 @@
 require "./token"
 
-module Code
+module Crlox
   class RuntimeError < Exception
     property :token
 
@@ -44,7 +44,10 @@ module Code
       elsif expression.operator.type == TokenType::BANG
         !truthy?(right)
       else
-        nil # FIXME: exception?
+        raise RuntimeError.new(
+          expression.operator,
+          "operator must be - or !"
+        )
       end
     end
 
@@ -90,12 +93,11 @@ module Code
       elsif type == TokenType::EQUAL_EQUAL
         equal?(left, right)
       else
-        nil # FIXME: exception?
+        raise RuntimeError.new(
+          expression.operator,
+          "operator not handled"
+        )
       end
-    end
-
-    def visit_print_expression(expression)
-      print(stringify(evaluate(expression.expression)))
     end
 
     def evaluate(expression : Expression)

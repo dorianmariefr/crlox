@@ -1,7 +1,7 @@
-require "./expression"
 require "./token"
+require "./expression"
 
-module Code
+module Crlox
   class ParseError < Exception
   end
 
@@ -26,7 +26,6 @@ module Code
     end
 
     def expression
-      return print if match(TokenType::PRINT)
       equality
     end
 
@@ -105,17 +104,6 @@ module Code
       end
     end
 
-    def print
-      value = expression
-
-      consume(
-        [TokenType::NEWLINE, TokenType::SEMICOLON],
-        "expect newline or semicolon after value"
-      )
-
-      Expression::Print.new(value)
-    end
-
     def match(*types)
       types.each do |type|
         if check(type)
@@ -171,8 +159,6 @@ module Code
       advance
 
       while !at_end?
-        # TODO: support multi-line expressions
-        return if previous.type == TokenType::NEWLINE
         return if previous.type == TokenType::SEMICOLON
         return if peek.type == TokenType::CLASS
         return if peek.type == TokenType::DEFINE

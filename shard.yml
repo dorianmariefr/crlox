@@ -1,12 +1,12 @@
-name: code
+name: crlox
 version: 0.1.0
 
 authors:
   - Dorian Marié <dorian@dorianmarie.fr>
 
 targets:
-  code:
-    main: src/code.cr
+  crlox:
+    main: src/crlox.cr
 
 crystal: 0.35.1
 

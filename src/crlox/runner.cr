@@ -1,9 +1,10 @@
+require "./token"
 require "./scanner"
 require "./parser"
 require "./interpreter"
 require "./ast_printer"
 
-module Code
+module Crlox
   class Runner
     @@had_error = false
     @@had_runtime_error = false
@@ -27,7 +28,7 @@ module Code
       if (token.type == TokenType::EOF)
         report(token.line, "at end", message)
       else
-        report(token.line, "at '#{token.lexeme}'", message)
+        report(token.line, "at #{token.lexeme.inspect}", message)
       end
     end
 
@@ -43,9 +44,9 @@ module Code
     end
 
     def self.run(source)
-      scanner = Code::Scanner.new(source)
+      scanner = Scanner.new(source)
       tokens = scanner.scan_tokens
-      expressions = Code::Parser.new(tokens).parse
+      expressions = Parser.new(tokens).parse
       return if @@had_error
       AstPrinter.new.print(expressions)
       @@interpreter.interpret(expressions)

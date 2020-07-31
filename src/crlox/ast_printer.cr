@@ -1,6 +1,4 @@
-require "./expression"
-
-module Code
+module Crlox
   class AstPrinter
     def print(expressions)
       expressions.each do |expression|
@@ -23,10 +21,6 @@ module Code
 
     def visit_unary_expression(expression)
       parenthesize(expression.operator.lexeme, expression.right)
-    end
-
-    def visit_print_expression(expression)
-      parenthesize("print", expression.expression)
     end
 
     def parenthesize(name, *expressions)

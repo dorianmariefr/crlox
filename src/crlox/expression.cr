@@ -1,4 +1,6 @@
-module Code
+require "./token"
+
+module Crlox
   abstract class Expression
     class Binary < Expression
       property :left
@@ -64,20 +66,5 @@ module Code
         visitor.visit_unary_expression(self)
       end
     end
-
-    class Print < Expression
-      property :expression
-
-      @expression : Expression
-
-      def initialize(expression : Expression)
-        @expression = expression
-      end
-
-      def accept(visitor)
-        visitor.visit_print_expression(self)
-      end
-    end
-
   end
 end

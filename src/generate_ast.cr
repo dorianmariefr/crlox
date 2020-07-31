@@ -1,61 +1,59 @@
 module Tool
-  def self.define_type(basename, class_name, fields)
-    output = "    class #{class_name} < #{basename}\n"
+  def self.define_type(writer, basename, class_name, fields)
+    writer.puts "    class #{class_name} < #{basename}\n"
 
     fields.split(",").each do |field|
       name = field.split(":")[0].strip
 
-      output += "      property :#{name}\n"
+      writer.puts "      property :#{name}"
     end
 
-    output += "\n"
+    writer.puts
 
     fields.split(",").each do |field|
       name = field.split(":")[0].strip
       type = field.split(":")[1].strip
 
-      output += "      @#{name} : #{type}\n"
+      writer.puts "      @#{name} : #{type}"
     end
 
-    output += "\n"
+    writer.puts
 
-    output += "      def initialize(#{fields})\n"
+    writer.puts "      def initialize(#{fields})"
 
     fields.split(",").each do |field|
       name = field.split(":")[0].strip
 
-      output += "        @#{name} = #{name}\n"
+      writer.puts "        @#{name} = #{name}"
     end
 
-    output += "      end\n"
+    writer.puts "      end"
 
-    output += "\n"
-    output += "      def accept(visitor)\n"
-    output += "        visitor.visit_#{class_name.underscore}_#{basename.underscore}(self)\n"
-    output += "      end\n"
-    output += "    end\n"
-
-    output
+    writer.puts
+    writer.puts "      def accept(visitor)"
+    writer.puts "        visitor.visit_#{class_name.underscore}_#{basename.underscore}(self)"
+    writer.puts "      end"
+    writer.puts "    end"
   end
 
-  def self.define_ast(output_directory : String, basename : String, types : Array(String))
-    filepath = "#{output_directory}/#{basename}.cr"
+  def self.define_ast(output_directory, basename, required, types)
+    File.open("#{output_directory}/#{basename.downcase}.cr", "w") do |writer|
+      writer.puts "require \"./#{required}\""
+      writer.puts
+      writer.puts "module Crlox"
+      writer.puts "  abstract class #{basename}"
 
-    output =  "module Code\n"
-    output += "  abstract class #{basename}\n"
+      types.each.with_index do |type, index|
+        class_name = type.split("=")[0].strip
+        fields = type.split("=")[1].strip
 
-    types.each do |type|
-      class_name = type.split("=")[0].strip
-      fields = type.split("=")[1].strip
+        define_type(writer, basename, class_name, fields)
+        writer.puts unless index == types.size - 1
+      end
 
-      output += define_type(basename, class_name, fields)
-      output += "\n"
+      writer.puts "  end"
+      writer.puts "end"
     end
-
-    output += "  end\n"
-    output += "end\n"
-
-    File.write(filepath, output)
   end
 end
 
@@ -64,10 +62,14 @@ if ARGV.size != 1
   exit(1)
 end
 
-Tool.define_ast(ARGV[0], "Expression", [
+Tool.define_ast(ARGV[0], "Expression", "token", [
   "Binary = left : Expression, operator : Token, right : Expression",
   "Grouping = expression : Expression",
   "Literal = value : LiteralType",
   "Unary = operator : Token, right : Expression",
+])
+
+Tool.define_ast(ARGV[0], "Statement", "expression", [
+  "Expression = expression : Expression",
   "Print = expression : Expression"
 ])

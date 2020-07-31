@@ -1,6 +1,6 @@
 require "./token"
 
-module Code
+module Crlox
   class Scanner
     @@keywords = {
       and: TokenType::AND,
@@ -8,16 +8,16 @@ module Code
       else: TokenType::ELSE,
       false: TokenType::FALSE,
       for: TokenType::FOR,
-      define: TokenType::DEFINE,
+      fun: TokenType::FUN,
       if: TokenType::IF,
       nil: TokenType::NIL,
       or: TokenType::OR,
       print: TokenType::PRINT,
-      puts: TokenType::PUTS,
       return: TokenType::RETURN,
       super: TokenType::SUPER,
-      self: TokenType::SELF,
+      this: TokenType::THIS,
       true: TokenType::TRUE,
+      var: TokenType::VAR,
       while: TokenType::WHILE,
     }
 
@@ -63,10 +63,12 @@ module Code
       elsif c == '*'
         add_token(TokenType::STAR)
       elsif c == '/'
-        add_token(TokenType::SLASH)
-      elsif c == '#'
-        while peek != '\n' && !at_end?
-          advance
+        if match('/') # a comment
+          while peek != '\n' && !at_end?
+            advance
+          end
+        else
+          add_token(TokenType::SLASH)
         end
       elsif c == '!'
         if match('=')
@@ -94,7 +96,6 @@ module Code
         end
       elsif c == ' ' || c == '\r' || c == '\t'
       elsif c == '\n'
-        add_token(TokenType::NEWLINE)
         @line += 1
       elsif c == '"'
         string
@@ -103,7 +104,7 @@ module Code
       elsif alpha?(c)
         identifier
       else
-        Code::Runner.error(@line, "unexpected character #{c}")
+        Runner.error(@line, "unexpected character #{c}")
       end
     end
 
@@ -136,7 +137,7 @@ module Code
       end
 
       if at_end?
-        Code::Runner.error(@line, "unterminated string")
+        Runner.error(@line, "unterminated string")
         return
       end
 
