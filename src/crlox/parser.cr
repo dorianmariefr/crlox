@@ -1,5 +1,6 @@
 require "./token"
 require "./expression"
+require "./statement"
 
 module Crlox
   class ParseError < Exception
@@ -14,15 +15,21 @@ module Crlox
     end
 
     def parse
-      expressions = Array(Expression).new
+      statements = Array(Statement).new
 
       while !at_end?
-        expressions << expression
+        statements << statement
       end
 
-      expressions
+      statements
     rescue ParseError
-      Array(Expression).new
+      Array(Statement).new
+    end
+
+    def statement
+      return print_statement if match(TokenType::PRINT)
+
+      expression_statement
     end
 
     def expression
@@ -102,6 +109,18 @@ module Crlox
       else
         raise error(peek, "expect expression")
       end
+    end
+
+    def print_statement
+      value = expression
+      consume(TokenType::SEMICOLON, "expect \";\" after value")
+      Statement::Print.new(value)
+    end
+
+    def expression_statement
+      expr = expression
+      consume(TokenType::SEMICOLON, "expect \";\" after expression")
+      Statement::Expression.new(expr)
     end
 
     def match(*types)

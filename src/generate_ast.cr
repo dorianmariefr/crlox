@@ -12,7 +12,7 @@ module Tool
 
     fields.split(",").each do |field|
       name = field.split(":")[0].strip
-      type = field.split(":")[1].strip
+      type = field.split(":", 2)[1].strip
 
       writer.puts "      @#{name} : #{type}"
     end
@@ -70,6 +70,6 @@ Tool.define_ast(ARGV[0], "Expression", "token", [
 ])
 
 Tool.define_ast(ARGV[0], "Statement", "expression", [
-  "Expression = expression : Expression",
-  "Print = expression : Expression"
+  "Expression = expression : Crlox::Expression",
+  "Print = expression : Crlox::Expression"
 ])

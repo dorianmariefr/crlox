@@ -1,8 +1,8 @@
 module Crlox
   class AstPrinter
-    def print(expressions)
-      expressions.each do |expression|
-        expression.accept(self)
+    def print(statements)
+      statements.each do |statement|
+        puts(statement.accept(self))
       end
     end
 
@@ -21,6 +21,14 @@ module Crlox
 
     def visit_unary_expression(expression)
       parenthesize(expression.operator.lexeme, expression.right)
+    end
+
+    def visit_print_statement(statement)
+      parenthesize("print", statement.expression)
+    end
+
+    def visit_expression_statement(statement)
+      parenthesize("expression", statement.expression)
     end
 
     def parenthesize(name, *expressions)

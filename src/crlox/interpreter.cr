@@ -14,18 +14,18 @@ module Crlox
   end
 
   class Interpreter
-    def interpret(expressions : Array(Expression))
+    def interpret(statements)
       begin
-        expressions.each do |expression|
-          execute(expression)
+        statements.each do |statement|
+          execute(statement)
         end
       rescue error : RuntimeError
         Runner.runtime_error(error)
       end
     end
 
-    def execute(expression)
-      expression.accept(self)
+    def execute(statement)
+      statement.accept(self)
     end
 
     def visit_literal_expression(expression)
@@ -98,6 +98,17 @@ module Crlox
           "operator not handled"
         )
       end
+    end
+
+    def visit_expression_statement(statement)
+      evaluate(statement.expression)
+      nil
+    end
+
+    def visit_print_statement(statement)
+      value = evaluate(statement.expression)
+      puts(stringify(value))
+      nil
     end
 
     def evaluate(expression : Expression)

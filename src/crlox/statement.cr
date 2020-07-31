@@ -5,9 +5,9 @@ module Crlox
     class Expression < Statement
       property :expression
 
-      @expression : Expression
+      @expression : Crlox::Expression
 
-      def initialize(expression : Expression)
+      def initialize(expression : Crlox::Expression)
         @expression = expression
       end
 
@@ -19,9 +19,9 @@ module Crlox
     class Print < Statement
       property :expression
 
-      @expression : Expression
+      @expression : Crlox::Expression
 
-      def initialize(expression : Expression)
+      def initialize(expression : Crlox::Expression)
         @expression = expression
       end
 

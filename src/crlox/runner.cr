@@ -46,10 +46,10 @@ module Crlox
     def self.run(source)
       scanner = Scanner.new(source)
       tokens = scanner.scan_tokens
-      expressions = Parser.new(tokens).parse
+      statements = Parser.new(tokens).parse
       return if @@had_error
-      AstPrinter.new.print(expressions)
-      @@interpreter.interpret(expressions)
+      AstPrinter.new.print(statements)
+      @@interpreter.interpret(statements)
     end
 
     def self.run_prompt
