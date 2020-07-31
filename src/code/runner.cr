@@ -1,7 +1,7 @@
 require "./scanner"
 require "./parser"
-require "./ast_printer"
 require "./interpreter"
+require "./ast_printer"
 
 module Code
   class Runner
@@ -45,12 +45,10 @@ module Code
     def self.run(source)
       scanner = Code::Scanner.new(source)
       tokens = scanner.scan_tokens
-      expression = Code::Parser.new(tokens).parse
+      expressions = Code::Parser.new(tokens).parse
       return if @@had_error
-      return if expression.nil?
-      expression = expression.as(Expression)
-      puts AstPrinter.new.print(expression)
-      @@interpreter.interpret(expression)
+      AstPrinter.new.print(expressions)
+      @@interpreter.interpret(expressions)
     end
 
     def self.run_prompt
@@ -63,7 +61,7 @@ module Code
         end
 
         run(line)
-        @@hadError = false
+        @@had_error = false
       end
     end
   end

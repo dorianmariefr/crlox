@@ -14,13 +14,18 @@ module Code
   end
 
   class Interpreter
-    def interpret(expression : Expression)
+    def interpret(expressions : Array(Expression))
       begin
-        value = evaluate(expression)
-        puts(stringify(value))
+        expressions.each do |expression|
+          execute(expression)
+        end
       rescue error : RuntimeError
         Runner.runtime_error(error)
       end
+    end
+
+    def execute(expression)
+      expression.accept(self)
     end
 
     def visit_literal_expression(expression)
@@ -87,6 +92,10 @@ module Code
       else
         nil # FIXME: exception?
       end
+    end
+
+    def visit_print_expression(expression)
+      print(stringify(evaluate(expression.expression)))
     end
 
     def evaluate(expression : Expression)

@@ -68,5 +68,6 @@ Tool.define_ast(ARGV[0], "Expression", [
   "Binary = left : Expression, operator : Token, right : Expression",
   "Grouping = expression : Expression",
   "Literal = value : LiteralType",
-  "Unary = operator : Token, right : Expression"
+  "Unary = operator : Token, right : Expression",
+  "Print = expression : Expression"
 ])

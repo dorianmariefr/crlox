@@ -14,14 +14,19 @@ module Code
     end
 
     def parse
-      begin
-        expression
-      rescue ParseError
-        nil
+      expressions = Array(Expression).new
+
+      while !at_end?
+        expressions << expression
       end
+
+      expressions
+    rescue ParseError
+      Array(Expression).new
     end
 
     def expression
+      return print if match(TokenType::PRINT)
       equality
     end
 
@@ -100,6 +105,17 @@ module Code
       end
     end
 
+    def print
+      value = expression
+
+      consume(
+        [TokenType::NEWLINE, TokenType::SEMICOLON],
+        "expect newline or semicolon after value"
+      )
+
+      Expression::Print.new(value)
+    end
+
     def match(*types)
       types.each do |type|
         if check(type)
@@ -133,8 +149,16 @@ module Code
       @tokens[@current - 1]
     end
 
-    def consume(type, message)
+    def consume(type : TokenType, message)
       return advance if check(type)
+      raise error(peek, message)
+    end
+
+    def consume(types : Array(TokenType), message)
+      types.each do |type|
+        return advance if check(type)
+      end
+
       raise error(peek, message)
     end
 

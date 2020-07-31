@@ -2,8 +2,10 @@ require "./expression"
 
 module Code
   class AstPrinter
-    def print(expression)
-      expression.accept(self)
+    def print(expressions)
+      expressions.each do |expression|
+        expression.accept(self)
+      end
     end
 
     def visit_binary_expression(expression)
@@ -23,6 +25,10 @@ module Code
       parenthesize(expression.operator.lexeme, expression.right)
     end
 
+    def visit_print_expression(expression)
+      parenthesize("print", expression.expression)
+    end
+
     def parenthesize(name, *expressions)
       result = "(#{name}"
 
@@ -34,15 +40,3 @@ module Code
     end
   end
 end
-
-# include Code
-#
-# expression = Expression::Binary.new(
-#   Expression::Unary.new(
-#     Token.new(TokenType::MINUS, "-", nil, 1),
-#     Expression::Literal.new(123)),
-#   Token.new(TokenType::STAR, "*", nil, 1),
-#   Expression::Grouping.new(
-#     Expression::Literal.new(45.67)))
-#
-# puts AstPrinter.new.print(expression)
