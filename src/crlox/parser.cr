@@ -18,22 +18,48 @@ module Crlox
       statements = Array(Statement).new
 
       while !at_end?
-        statements << statement
+        decl = declaration
+        statements << decl.as(Statement) unless decl.nil?
       end
 
       statements
-    rescue ParseError
-      Array(Statement).new
+    end
+
+    def declaration
+      return var_declaration if match(TokenType::VAR)
+      statement
+    rescue error : ParseError
+      synchronize
+      nil
     end
 
     def statement
       return print_statement if match(TokenType::PRINT)
+      return Statement::Block.new(block) if match(TokenType::LEFT_BRACE)
 
       expression_statement
     end
 
     def expression
-      equality
+      assignment
+    end
+
+    def assignment
+      expression = equality
+
+      if match(TokenType::EQUAL)
+        equals = previous
+        value = assignment
+
+        if expression.is_a?(Expression::Variable)
+          name = expression.as(Expression::Variable).name
+          return Expression::Assignment.new(name, value)
+        end
+
+        error(equals, "invalid assignment target")
+      end
+
+      expression
     end
 
     def equality
@@ -102,6 +128,8 @@ module Crlox
 
       if match(TokenType::NUMBER, TokenType::STRING)
         Expression::Literal.new(previous.literal)
+      elsif match(TokenType::IDENTIFIER)
+        Expression::Variable.new(previous)
       elsif match(TokenType::LEFT_PAREN)
         grouping_expression = expression
         consume(TokenType::RIGHT_PAREN, "expected \")\" after expression")
@@ -121,6 +149,27 @@ module Crlox
       expr = expression
       consume(TokenType::SEMICOLON, "expect \";\" after expression")
       Statement::Expression.new(expr)
+    end
+
+    def var_declaration
+      name = consume(TokenType::IDENTIFIER, "expect variable name")
+
+      initializer = nil
+      initializer = expression if match(TokenType::EQUAL)
+      consume(TokenType::SEMICOLON, "expect \";\" after variable declaration")
+      Statement::Var.new(name, initializer)
+    end
+
+    def block
+      statements = Array(Statement).new
+
+      while !check(TokenType::RIGHT_BRACE) && !at_end?
+        decl = declaration
+        statements << decl.as(Statement) unless decl.nil?
+      end
+
+      consume(TokenType::RIGHT_BRACE, "expect \"}\" after block")
+      statements
     end
 
     def match(*types)
@@ -180,11 +229,10 @@ module Crlox
       while !at_end?
         return if previous.type == TokenType::SEMICOLON
         return if peek.type == TokenType::CLASS
-        return if peek.type == TokenType::DEFINE
+        return if peek.type == TokenType::FUN
         return if peek.type == TokenType::FOR
         return if peek.type == TokenType::IF
         return if peek.type == TokenType::WHILE
-        return if peek.type == TokenType::PUTS
         return if peek.type == TokenType::PRINT
         return if peek.type == TokenType::RETURN
 

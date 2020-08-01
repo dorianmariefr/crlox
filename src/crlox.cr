@@ -1,3 +1,5 @@
+#!/usr/bin/env crystal
+
 require "./crlox/runner"
 
 if ARGV.size > 1

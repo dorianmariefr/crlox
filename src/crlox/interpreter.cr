@@ -1,4 +1,5 @@
 require "./token"
+require "./environment"
 
 module Crlox
   class RuntimeError < Exception
@@ -14,6 +15,8 @@ module Crlox
   end
 
   class Interpreter
+    @environment = Environment.new
+
     def interpret(statements)
       begin
         statements.each do |statement|
@@ -25,7 +28,7 @@ module Crlox
     end
 
     def execute(statement)
-      statement.accept(self)
+      statement.accept(self) unless statement.nil?
     end
 
     def visit_literal_expression(expression)
@@ -100,6 +103,16 @@ module Crlox
       end
     end
 
+    def visit_variable_expression(expression)
+      @environment.get(expression.name)
+    end
+
+    def visit_assignment_expression(expression)
+      value = evaluate(expression.value)
+      @environment.assign(expression.name, value)
+      value
+    end
+
     def visit_expression_statement(statement)
       evaluate(statement.expression)
       nil
@@ -111,8 +124,38 @@ module Crlox
       nil
     end
 
+    def visit_var_statement(statement)
+      if statement.initializer
+        value = evaluate(statement.initializer.as(Expression))
+      else
+        value = nil
+      end
+
+      @environment.define(statement.name.lexeme, value)
+
+      nil
+    end
+
+    def visit_block_statement(statement)
+      execute_block(statement.statements, Environment.new(@environment))
+    end
+
     def evaluate(expression : Expression)
       expression.accept(self)
+    end
+
+    def execute_block(statements, environment)
+      previous = @environment
+
+      begin
+        @environment = environment
+
+        statements.each do |statement|
+          execute(statement)
+        end
+      ensure
+        @environment = previous
+      end
     end
 
     def truthy?(object)

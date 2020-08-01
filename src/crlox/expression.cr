@@ -66,5 +66,36 @@ module Crlox
         visitor.visit_unary_expression(self)
       end
     end
+
+    class Variable < Expression
+      property :name
+
+      @name : Token
+
+      def initialize(name : Token)
+        @name = name
+      end
+
+      def accept(visitor)
+        visitor.visit_variable_expression(self)
+      end
+    end
+
+    class Assignment < Expression
+      property :name
+      property :value
+
+      @name : Token
+      @value : Expression
+
+      def initialize(name : Token, value : Expression)
+        @name = name
+        @value = value
+      end
+
+      def accept(visitor)
+        visitor.visit_assignment_expression(self)
+      end
+    end
   end
 end

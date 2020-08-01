@@ -36,9 +36,12 @@ module Tool
     writer.puts "    end"
   end
 
-  def self.define_ast(output_directory, basename, required, types)
+  def self.define_ast(output_directory, basename, requires, types)
     File.open("#{output_directory}/#{basename.downcase}.cr", "w") do |writer|
-      writer.puts "require \"./#{required}\""
+      requires.split(",").each do |required|
+        writer.puts "require \"./#{required}\""
+      end
+
       writer.puts
       writer.puts "module Crlox"
       writer.puts "  abstract class #{basename}"
@@ -67,9 +70,13 @@ Tool.define_ast(ARGV[0], "Expression", "token", [
   "Grouping = expression : Expression",
   "Literal = value : LiteralType",
   "Unary = operator : Token, right : Expression",
+  "Variable = name : Token",
+  "Assignment = name : Token, value : Expression"
 ])
 
-Tool.define_ast(ARGV[0], "Statement", "expression", [
+Tool.define_ast(ARGV[0], "Statement", "token,expression", [
   "Expression = expression : Crlox::Expression",
-  "Print = expression : Crlox::Expression"
+  "Print = expression : Crlox::Expression",
+  "Var = name : Token, initializer : (Crlox::Expression | Nil)",
+  "Block = statements : Array(Statement)"
 ])

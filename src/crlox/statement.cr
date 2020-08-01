@@ -1,3 +1,4 @@
+require "./token"
 require "./expression"
 
 module Crlox
@@ -27,6 +28,37 @@ module Crlox
 
       def accept(visitor)
         visitor.visit_print_statement(self)
+      end
+    end
+
+    class Var < Statement
+      property :name
+      property :initializer
+
+      @name : Token
+      @initializer : (Crlox::Expression | Nil)
+
+      def initialize(name : Token, initializer : (Crlox::Expression | Nil))
+        @name = name
+        @initializer = initializer
+      end
+
+      def accept(visitor)
+        visitor.visit_var_statement(self)
+      end
+    end
+
+    class Block < Statement
+      property :statements
+
+      @statements : Array(Statement)
+
+      def initialize(statements : Array(Statement))
+        @statements = statements
+      end
+
+      def accept(visitor)
+        visitor.visit_block_statement(self)
       end
     end
   end
