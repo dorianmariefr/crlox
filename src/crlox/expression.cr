@@ -97,5 +97,25 @@ module Crlox
         visitor.visit_assignment_expression(self)
       end
     end
+
+    class Logical < Expression
+      property :left
+      property :operator
+      property :right
+
+      @left : Expression
+      @operator : Token
+      @right : Expression
+
+      def initialize(left : Expression, operator : Token, right : Expression)
+        @left = left
+        @operator = operator
+        @right = right
+      end
+
+      def accept(visitor)
+        visitor.visit_logical_expression(self)
+      end
+    end
   end
 end

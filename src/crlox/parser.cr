@@ -46,7 +46,7 @@ module Crlox
     end
 
     def assignment
-      expression = equality
+      expression = or
 
       if match(TokenType::EQUAL)
         equals = previous
@@ -58,6 +58,30 @@ module Crlox
         end
 
         error(equals, "invalid assignment target")
+      end
+
+      expression
+    end
+
+    def or
+      expression = and
+
+      while match(TokenType::OR)
+        operator = previous
+        right = and
+        expression = Expression::Logical.new(expression, operator, right)
+      end
+
+      expression
+    end
+
+    def and
+      expression = equality
+
+      while match(TokenType::AND)
+        operator = previous
+        right = equality
+        expression = Expression::Logical.new(expression, operator, right)
       end
 
       expression

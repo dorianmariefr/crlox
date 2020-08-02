@@ -31,6 +31,10 @@ module Crlox
       parenthesize("assign #{expression.name.lexeme}", expression.value)
     end
 
+    def visit_logical_expression(expression)
+      parenthesize(expression.operator.lexeme, [expression.left, expression.right])
+    end
+
     def visit_print_statement(statement)
       parenthesize("print", statement.expression)
     end

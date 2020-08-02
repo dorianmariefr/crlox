@@ -113,6 +113,18 @@ module Crlox
       value
     end
 
+    def visit_logical_expression(expression)
+      left = evaluate(expression.left)
+
+      if expression.operator.type == TokenType::OR
+        return left if truthy?(left)
+      else
+        return left if !truthy?(left)
+      end
+
+      evaluate(expression.right)
+    end
+
     def visit_expression_statement(statement)
       evaluate(statement.expression)
       nil
