@@ -34,11 +34,67 @@ module Crlox
     end
 
     def statement
+      return for_statement if match(TokenType::FOR)
       return if_statement if match(TokenType::IF)
       return print_statement if match(TokenType::PRINT)
+      return while_statement if match(TokenType::WHILE)
       return Statement::Block.new(block) if match(TokenType::LEFT_BRACE)
 
       expression_statement
+    end
+
+    def for_statement
+      consume(TokenType::LEFT_PAREN, "expect \"(\" after \"for\"")
+
+      initializer = nil
+
+      if match(TokenType::SEMICOLON)
+        initializer = nil
+      elsif match(TokenType::VAR)
+        initializer = var_declaration
+      else
+        initializer = expression_statement
+      end
+
+      condition = nil
+
+      if !check(TokenType::SEMICOLON)
+        condition = expression
+      end
+
+      consume(TokenType::SEMICOLON, "expect \";\" after loop condition")
+
+      increment = nil
+
+      if !check(TokenType::RIGHT_PAREN)
+        increment = expression
+      end
+
+      consume(TokenType::RIGHT_PAREN, "expect \")\" after for clauses")
+
+      body = statement
+
+      unless increment.nil?
+        body = Statement::Block.new([body, Statement::Expression.new(increment)])
+      end
+
+      condition = Expression::Literal.new(true) if condition.nil?
+      body = Statement::While.new(condition, body)
+
+      unless initializer.nil?
+        body = Statement::Block.new([initializer, body])
+      end
+
+      body
+    end
+
+    def while_statement
+      consume(TokenType::LEFT_PAREN, "expect \"(\" after \"while\"")
+      condition = expression
+      consume(TokenType::RIGHT_PAREN, "expect \")\" after condition")
+      body = statement
+
+      Statement::While.new(condition, body)
     end
 
     def expression

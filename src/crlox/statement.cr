@@ -51,9 +51,9 @@ module Crlox
     class Block < Statement
       property :statements
 
-      @statements : Array(Statement)
+      @statements : Array(Statement | Crlox::Expression)
 
-      def initialize(statements : Array(Statement))
+      def initialize(statements : Array(Statement | Crlox::Expression))
         @statements = statements
       end
 
@@ -79,6 +79,23 @@ module Crlox
 
       def accept(visitor)
         visitor.visit_if_statement(self)
+      end
+    end
+
+    class While < Statement
+      property :condition
+      property :body
+
+      @condition : Crlox::Expression
+      @body : Statement
+
+      def initialize(condition : Crlox::Expression, body : Statement)
+        @condition = condition
+        @body = body
+      end
+
+      def accept(visitor)
+        visitor.visit_while_statement(self)
       end
     end
   end

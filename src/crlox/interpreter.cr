@@ -162,6 +162,14 @@ module Crlox
       nil
     end
 
+    def visit_while_statement(statement)
+      while truthy?(evaluate(statement.condition))
+        execute(statement.body)
+      end
+
+      nil
+    end
+
     def evaluate(expression : Expression)
       expression.accept(self)
     end

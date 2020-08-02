@@ -2,7 +2,6 @@ require "./token"
 require "./scanner"
 require "./parser"
 require "./interpreter"
-require "./ast_printer"
 
 module Crlox
   class Runner
@@ -39,8 +38,7 @@ module Crlox
 
     def self.run_file(filepath)
       run(File.read(filepath))
-      exit(1) if @@had_error
-      exit(1) if @@had_runtime_error
+      exit(1) if @@had_error || @@had_runtime_error
     end
 
     def self.run(source)
@@ -48,7 +46,6 @@ module Crlox
       tokens = scanner.scan_tokens
       statements = Parser.new(tokens).parse
       return if @@had_error
-      AstPrinter.new.print(statements)
       @@interpreter.interpret(statements)
     end
 
