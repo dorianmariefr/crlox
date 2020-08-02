@@ -71,12 +71,14 @@ Tool.define_ast(ARGV[0], "Expression", "token", [
   "Literal = value : LiteralType",
   "Unary = operator : Token, right : Expression",
   "Variable = name : Token",
-  "Assignment = name : Token, value : Expression"
+  "Assignment = name : Token, value : Expression",
+  "Logical = left : Expression, operator : Token, right : Expression"
 ])
 
 Tool.define_ast(ARGV[0], "Statement", "token,expression", [
   "Expression = expression : Crlox::Expression",
   "Print = expression : Crlox::Expression",
   "Var = name : Token, initializer : (Crlox::Expression | Nil)",
-  "Block = statements : Array(Statement)"
+  "Block = statements : Array(Statement)",
+  "If = condition : Crlox::Expression, then_branch : Statement, else_branch : (Statement | Nil)"
 ])

@@ -34,6 +34,7 @@ module Crlox
     end
 
     def statement
+      return if_statement if match(TokenType::IF)
       return print_statement if match(TokenType::PRINT)
       return Statement::Block.new(block) if match(TokenType::LEFT_BRACE)
 
@@ -170,6 +171,20 @@ module Crlox
 
       consume(TokenType::RIGHT_BRACE, "expect \"}\" after block")
       statements
+    end
+
+    def if_statement
+      consume(TokenType::LEFT_PAREN, "expect \"(\" after \"if\"")
+      condition = expression
+      consume(TokenType::RIGHT_PAREN, "expect \")\" after if condition")
+      then_branch = statement
+      else_branch = nil
+
+      if match(TokenType::ELSE)
+        else_branch = statement
+      end
+
+      Statement::If.new(condition, then_branch, else_branch)
     end
 
     def match(*types)

@@ -61,5 +61,25 @@ module Crlox
         visitor.visit_block_statement(self)
       end
     end
+
+    class If < Statement
+      property :condition
+      property :then_branch
+      property :else_branch
+
+      @condition : Crlox::Expression
+      @then_branch : Statement
+      @else_branch : (Statement | Nil)
+
+      def initialize(condition : Crlox::Expression, then_branch : Statement, else_branch : (Statement | Nil))
+        @condition = condition
+        @then_branch = then_branch
+        @else_branch = else_branch
+      end
+
+      def accept(visitor)
+        visitor.visit_if_statement(self)
+      end
+    end
   end
 end

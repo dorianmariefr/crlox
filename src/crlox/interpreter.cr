@@ -140,6 +140,16 @@ module Crlox
       execute_block(statement.statements, Environment.new(@environment))
     end
 
+    def visit_if_statement(statement)
+      if truthy?(evaluate(statement.condition))
+        execute(statement.then_branch)
+      elsif !statement.else_branch.nil?
+        execute(statement.else_branch.as(Statement))
+      end
+
+      nil
+    end
+
     def evaluate(expression : Expression)
       expression.accept(self)
     end

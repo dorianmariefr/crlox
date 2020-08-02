@@ -47,6 +47,18 @@ module Crlox
       parenthesize("block", statement.statements)
     end
 
+    def visit_if_statement(statement)
+      if statement.else_branch.nil?
+        parenthesize("if", [statement.condition, statement.then_branch])
+      else
+        parenthesize("if", [
+          statement.condition,
+          statement.then_branch,
+          statement.else_branch.as(Statement)
+        ])
+      end
+    end
+
     def parenthesize(name, expression : (Expression | Statement | Nil))
       result = "(#{name}"
 
@@ -57,7 +69,7 @@ module Crlox
       result + ")"
     end
 
-    def parenthesize(name, expressions : (Array(Expression) | Array(Statement)))
+    def parenthesize(name, expressions : (Array(Expression | Statement)))
       result = "(#{name}"
 
       expressions.each do |expression|
