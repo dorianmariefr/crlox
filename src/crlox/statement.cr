@@ -51,9 +51,9 @@ module Crlox
     class Block < Statement
       property :statements
 
-      @statements : Array(Statement | Crlox::Expression)
+      @statements : Array(Statement)
 
-      def initialize(statements : Array(Statement | Crlox::Expression))
+      def initialize(statements : Array(Statement))
         @statements = statements
       end
 

@@ -75,7 +75,9 @@ module Crlox
       body = statement
 
       unless increment.nil?
-        body = Statement::Block.new([body, Statement::Expression.new(increment)])
+        body = Statement::Block.new(
+          [body, Statement::Expression.new(increment)] of Statement
+        )
       end
 
       condition = Expression::Literal.new(true) if condition.nil?

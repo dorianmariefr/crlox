@@ -72,7 +72,8 @@ Tool.define_ast(ARGV[0], "Expression", "token", [
   "Unary = operator : Token, right : Expression",
   "Variable = name : Token",
   "Assignment = name : Token, value : Expression",
-  "Logical = left : Expression, operator : Token, right : Expression"
+  "Logical = left : Expression, operator : Token, right : Expression",
+  "Call = callee : Expression, paren : Token, arguments : Array(Expression)"
 ])
 
 Tool.define_ast(ARGV[0], "Statement", "token,expression", [
