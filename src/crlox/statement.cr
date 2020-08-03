@@ -98,5 +98,42 @@ module Crlox
         visitor.visit_while_statement(self)
       end
     end
+
+    class Function < Statement
+      property :name
+      property :params
+      property :body
+
+      @name : Token
+      @params : Array(Token)
+      @body : Array(Statement)
+
+      def initialize(name : Token, params : Array(Token), body : Array(Statement))
+        @name = name
+        @params = params
+        @body = body
+      end
+
+      def accept(visitor)
+        visitor.visit_function_statement(self)
+      end
+    end
+
+    class Return < Statement
+      property :keyword
+      property :value
+
+      @keyword : Token
+      @value : Crlox::Expression
+
+      def initialize(keyword : Token, value : Crlox::Expression)
+        @keyword = keyword
+        @value = value
+      end
+
+      def accept(visitor)
+        visitor.visit_return_statement(self)
+      end
+    end
   end
 end

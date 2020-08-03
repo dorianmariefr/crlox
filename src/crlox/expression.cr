@@ -117,5 +117,25 @@ module Crlox
         visitor.visit_logical_expression(self)
       end
     end
+
+    class Call < Expression
+      property :callee
+      property :paren
+      property :arguments
+
+      @callee : Expression
+      @paren : Token
+      @arguments : Array(Expression)
+
+      def initialize(callee : Expression, paren : Token, arguments : Array(Expression))
+        @callee = callee
+        @paren = paren
+        @arguments = arguments
+      end
+
+      def accept(visitor)
+        visitor.visit_call_expression(self)
+      end
+    end
   end
 end

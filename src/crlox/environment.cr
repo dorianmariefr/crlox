@@ -1,7 +1,7 @@
 module Crlox
   class Environment
     @enclosing : (Environment | Nil)
-    @values = Hash(String, LiteralType).new
+    @values = Hash(String, (LiteralType | Callable)).new
 
     def initialize(enclosing : (Environment | Nil) = nil)
       @enclosing = enclosing

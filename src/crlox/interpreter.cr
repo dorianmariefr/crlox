@@ -1,5 +1,6 @@
 require "./token"
 require "./environment"
+require "./callable"
 
 module Crlox
   class RuntimeError < Exception
@@ -15,7 +16,16 @@ module Crlox
   end
 
   class Interpreter
-    @environment = Environment.new
+    property :globals
+    property :environment
+
+    @globals = Environment.new
+    @environment : Environment
+
+    def initialize
+      @environment = @globals
+      @globals.define("clock", Callable::Clock.new)
+    end
 
     def interpret(statements)
       begin
@@ -125,6 +135,31 @@ module Crlox
       evaluate(expression.right)
     end
 
+    def visit_call_expression(expression)
+      callee = evaluate(expression.callee)
+
+      arguments = Array(LiteralType | Callable).new
+
+      expression.arguments.each do |argument|
+        arguments << evaluate(argument)
+      end
+
+      unless callee.is_a?(Callable)
+        raise RuntimeError.new(expression.paren, "can only call functions and classes")
+      end
+
+      function = callee.as(Callable)
+
+      if arguments.size != function.arity
+        raise RuntimeError.new(
+          expression.paren,
+          "expected #{function.arity} arguments but got #{arguments.size}"
+         )
+      end
+
+      function.call(self, arguments)
+    end
+
     def visit_expression_statement(statement)
       evaluate(statement.expression)
       nil
@@ -167,6 +202,12 @@ module Crlox
         execute(statement.body)
       end
 
+      nil
+    end
+
+    def visit_function_statement(statement)
+      function = Callable::Function.new(statement)
+      @environment.define(statement.name.lexeme, function)
       nil
     end
 

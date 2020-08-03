@@ -26,6 +26,7 @@ module Crlox
     end
 
     def declaration
+      return function("function") if match(TokenType::FUN)
       return var_declaration if match(TokenType::VAR)
       statement
     rescue error : ParseError
@@ -33,14 +34,49 @@ module Crlox
       nil
     end
 
+    def function(kind)
+      name = consume(TokenType::IDENTIFIER, "expect #{kind} name")
+      consume(TokenType::LEFT_PAREN, "expect \"(\" after #{kind} name")
+      parameters = Array(Token).new
+
+      if !check(TokenType::RIGHT_PAREN)
+        loop do
+          if parameters.size > 255
+            error(peek, "cannot have more than 255 parameters")
+          end
+
+          parameters << consume(TokenType::IDENTIFIER, "expect parameter name")
+          break unless match(TokenType::COMMA)
+        end
+      end
+
+      consume(TokenType::RIGHT_PAREN, "expect \")\" after parameters")
+      consume(TokenType::LEFT_BRACE, "expect \"}\" before #{kind} body")
+      body = block
+      Statement::Function.new(name, parameters, body)
+    end
+
     def statement
       return for_statement if match(TokenType::FOR)
       return if_statement if match(TokenType::IF)
       return print_statement if match(TokenType::PRINT)
+      return return_statement if match(TokenType::RETURN)
       return while_statement if match(TokenType::WHILE)
       return Statement::Block.new(block) if match(TokenType::LEFT_BRACE)
 
       expression_statement
+    end
+
+    def return_statement
+      keyword = previous
+      value = nil
+
+      if !check(TokenType::SEMICOLON)
+        value = expression
+      end
+
+      consume(TokenType::SEMICOLON, "expect \"l\" after return value")
+      Statement::Return.new(keyword, value)
     end
 
     def for_statement
@@ -200,8 +236,41 @@ module Crlox
         right = unary
         Expression::Unary.new(operator, right)
       else
-        primary
+        call
       end
+    end
+
+    def call
+      expression = primary
+
+      loop do
+        if match(TokenType::LEFT_PAREN)
+          expression = finish_call(expression)
+        else
+          break
+        end
+      end
+
+      expression
+    end
+
+    def finish_call(callee)
+      arguments = Array(Expression).new
+
+      if !check(TokenType::RIGHT_PAREN)
+        loop do
+          if arguments.size > 255
+            error(peek, "cannot have more than 255 arguments")
+          end
+
+          arguments << expression
+          break unless match(TokenType::COMMA)
+        end
+      end
+
+      paren = consume(TokenType::RIGHT_PAREN, "expect \")\" after arguments")
+
+      Expression::Call.new(callee, paren, arguments)
     end
 
     def primary
