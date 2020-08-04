@@ -21,7 +21,7 @@ module Crlox
     @value : (LiteralType | Callable)
 
     def initialize(value : (LiteralType | Callable))
-      super
+      super()
       @value = value
     end
   end
