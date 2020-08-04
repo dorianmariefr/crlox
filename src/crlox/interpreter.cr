@@ -15,6 +15,17 @@ module Crlox
     end
   end
 
+  class Return < Exception
+    property :value
+
+    @value : (LiteralType | Callable)
+
+    def initialize(value : (LiteralType | Callable))
+      super
+      @value = value
+    end
+  end
+
   class Interpreter
     property :globals
     property :environment
@@ -209,6 +220,13 @@ module Crlox
       function = Callable::Function.new(statement)
       @environment.define(statement.name.lexeme, function)
       nil
+    end
+
+    def visit_return_statement(statement)
+      value = nil
+      value = evaluate(statement.value.as(Expression)) unless statement.value.nil?
+
+      raise Return.new(value)
     end
 
     def evaluate(expression : Expression)

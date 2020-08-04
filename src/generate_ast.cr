@@ -79,10 +79,10 @@ Tool.define_ast(ARGV[0], "Expression", "token", [
 Tool.define_ast(ARGV[0], "Statement", "token,expression", [
   "Expression = expression : Crlox::Expression",
   "Print = expression : Crlox::Expression",
-  "Var = name : Token, initializer : (Crlox::Expression | Nil)",
+  "Var = name : Token, initializer : Crlox::Expression?",
   "Block = statements : Array(Statement)",
-  "If = condition : Crlox::Expression, then_branch : Statement, else_branch : (Statement | Nil)",
+  "If = condition : Crlox::Expression, then_branch : Statement, else_branch : Statement?",
   "While = condition : Crlox::Expression, body : Statement",
   "Function = name : Token, params : Array(Token), body : Array(Statement)",
-  "Return = keyword : Token, value : (Crlox::Expression | Nil)"
+  "Return = keyword : Token, value : Crlox::Expression?"
 ])

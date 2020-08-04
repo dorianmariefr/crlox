@@ -1,3 +1,5 @@
+require "./interpreter"
+
 module Crlox
   class Callable
     def arity
@@ -44,7 +46,11 @@ module Crlox
           environment.define(@declaration.params[i].lexeme, arguments[i])
         end
 
-        interpreter.execute_block(@declaration.body, environment)
+        begin
+          interpreter.execute_block(@declaration.body, environment)
+        rescue return_value : Return
+          return return_value.value
+        end
 
         nil
       end

@@ -36,9 +36,9 @@ module Crlox
       property :initializer
 
       @name : Token
-      @initializer : (Crlox::Expression | Nil)
+      @initializer : Crlox::Expression?
 
-      def initialize(name : Token, initializer : (Crlox::Expression | Nil))
+      def initialize(name : Token, initializer : Crlox::Expression?)
         @name = name
         @initializer = initializer
       end
@@ -69,9 +69,9 @@ module Crlox
 
       @condition : Crlox::Expression
       @then_branch : Statement
-      @else_branch : (Statement | Nil)
+      @else_branch : Statement?
 
-      def initialize(condition : Crlox::Expression, then_branch : Statement, else_branch : (Statement | Nil))
+      def initialize(condition : Crlox::Expression, then_branch : Statement, else_branch : Statement?)
         @condition = condition
         @then_branch = then_branch
         @else_branch = else_branch
@@ -124,9 +124,9 @@ module Crlox
       property :value
 
       @keyword : Token
-      @value : Crlox::Expression
+      @value : Crlox::Expression?
 
-      def initialize(keyword : Token, value : Crlox::Expression)
+      def initialize(keyword : Token, value : Crlox::Expression?)
         @keyword = keyword
         @value = value
       end
