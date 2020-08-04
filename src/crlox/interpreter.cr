@@ -217,7 +217,7 @@ module Crlox
     end
 
     def visit_function_statement(statement)
-      function = Callable::Function.new(statement)
+      function = Callable::Function.new(statement, @environment)
       @environment.define(statement.name.lexeme, function)
       nil
     end

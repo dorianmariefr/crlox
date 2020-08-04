@@ -30,9 +30,11 @@ module Crlox
 
     class Function < Callable
       @declaration : Statement::Function
+      @closure : Environment
 
-      def initialize(declaration : Statement::Function)
+      def initialize(declaration : Statement::Function, closure : Environment)
         @declaration = declaration
+        @closure = closure
       end
 
       def arity
@@ -40,7 +42,7 @@ module Crlox
       end
 
       def call(interpreter, arguments)
-        environment = Environment.new(interpreter.globals)
+        environment = Environment.new(@closure)
 
         (0...(@declaration.params.size)).each do |i|
           environment.define(@declaration.params[i].lexeme, arguments[i])
